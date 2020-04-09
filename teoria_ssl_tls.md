@@ -102,7 +102,97 @@ Conté les claus (privada o pública) en format **ascii**. De fet, el contingut 
 
 Contenen les claus en format **binari**.
 
+### Xifrat
 
+Els fitxers de clau privada s'acostumen a xifrar amb un password com a mesura extra de protecció, ja que si algú aconsegueix la clau privada tindrà accés a totes les dades.
+
+Els formats més usuals amb el que es xifra són **DES**, **3DES** (és el format actual per defecte) i **IDEA**.
+
+### Altres
+
+Sovint es troben fitxers amb claus que tenen les extensions *.cert*, *.crt*, *.crs* o *.key*. La veritat és que aquestes extensions no signifiquen res ni descriuren realment el format del fitxer sinó que són una mala praxis d'intentar descriure per què serveix el certificat.
+
+De fet, segurament el certificat és un **PEM**.
+
+És l'equivalent a si fiquèssim *.document* o *.informe* a fitxers de text *.txt*, *.odt*.
+
+## Formats de les claus i certificats
+
+Tipus de claus:
+
+* `RSA`
+
+* `DSA`
+
+* `X509`
+
+* `PKCS`
+  
+  * `PKCS#1`
+  
+  * `PKCS#7`
+  
+  * `PKCS#8`
+  
+  * `PKCS#10`
+  
+  * `PKCS#12`
+
+### RSA
+
+Actualment són les claus usades per defecte en **openssl**.
+
+El nom prové dels seus autors "*Ron Rivest, Adi Shamir i Leonard Adleman*".
+
+Aquest algorisme és vàlid per xifrar i signar contingut digital.
+
+### DSA
+
+El nom significa "**Digital Signature Algorithm**".
+
+És un estàndard de criptografia del govern d'USA usat per signar digitalment.
+
+### X509
+
+Un certificat és la clau pública més la informació identificativa del propiètari i l'emissor, més la firma de l'entitat que ha emès el certificat que l'avala.
+
+En un certificat digital pot haver-hi a més a més el certificat de l'entitat emissora o de vàries entitats emissores (les que formen la cadena de confiança).
+
+### PKCS
+
+S'anomena "**Public-Key Cryptography Standards**" a un conjunt d'estàndards de seguretat publicats per *RSA Security*.
+
+Alguns dels seus estàndards més coneguts són:
+
+* `PKCS#1`: és l'estàndard que defineix el format de les claus de tipus **RSA** (tant privades com públiques)
+
+* `PKCS#7`: és l'estàndard usat per definir **S/MIME**
+
+* `PKCS#8`: és el nou estàndard per a la gestió de claus privades
+
+* `PKCS#10`: és l'estàndard que defineix el format de les peticions de **certificació** o **request**.
+
+* `PKCS#12`: Alguns clients de correus (com per exemple *thunderbird*) utilitzen un tipus de fitxers de claus diferents als fitxers *.pem*. El format **PKCS#12** és el format més usual amb que els clients gràfics emmagatzemen els anells de claus. No contenen només un certificat sinó que ho poden contenir tot (claus i certificats), és com una mena de contenidor.
+
+### Creació de claus i certificats
+
+Cada usuari es pot crear la seva pròpia clau privada. Per crear la clau pública disposa de dues opcions:
+
+* Crear una clau *avalada* per ell mateix, que s'anomenen '**certificats auto-signats**'. Els altres interlocutors hi confiaràn si confien amb l'usuari que ho ha emés.
+
+* Crear una petició de certificat (clau pública + dades descriptives de l'emissor) i demanar a una entitat de certificació (anomenades CA '**Certification Authority**') que en generi un certificat *avalat* per aquesta **CA**.
+
+## Models de confiança
+
+* `Web of trust`: en aquest model cada usuari és el responsable de confiar o no amb els certificats dels altres. No hi ha entitats de certificació ni cap mena d'estructura de control dels certificats. Els usuaris se'ls han d'intercanviar entre ells i han de decidir amb quins confien i amb quins no. Es pot implementar la confiança a tercers en el sentit que si en "pere" confia en l'"anna" pot decidir si hi confia tant com per confiar també amb tothom amb qui "anna" confia. Aquest és el model usat per **PGP** (i **Open PGP**) per xifrar i signar correu. Els certificats que s'utilitzen són **self-signed**.
+
+* `PKI`: **Public Key Infrastructure** és el model on la confiança es basa en **l'entitat emissora** del certificat. Existeix una estructura piramidal d'entitats de certificació o CA. Un certificat emès per una CA és vàlid o no segons la confiança que es tingui en la CA. Aquesta CA pot ser de primer nivell (top) o una delegació avalada per una CA de rang superior. En aquest cas la confiança depèn de la "cadena de confiança".
+
+### Tipus d'elements relacionats amb la confiança
+
+* `CA self-signed`: una *Certification Authority* és una entitat de certificació. Si és **independent** (s'ha creat ella mateixa) tindrà la confiança que hi tinguin els altres amb ella. Per exemple una empresa pot ser entitat CA per als certificats dels seus pròpis treballadors. Aquests hi confien com a CA però no el món exterior a l'empresa.
+
+* `CA top`: les CA que existeixen a internet poden ser entitats de certificació *top* o entitats de certificació *delegades*. Una entitat de primer nivell o *top* és de fet una entitat **auto-signada**. A internet existeixen una sèrie d'entitats conegudes amb les que s'hi confia per defecte (el navegadors web ja porten incorporades aquestes entitats com a CA vàlides).
 
 # Exemples d'ordres
 

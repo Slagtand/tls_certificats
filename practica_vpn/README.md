@@ -1,7 +1,7 @@
 - [Servidor ldap segur](#servidor-ldap-segur)
   * [Generar certificats](#generar-certificats)
     + [Generar claus privades del servidor](#generar-claus-privades-del-servidor)
-    + [Creació CA](#creaci--ca)
+    + [Creació CA](#creació-ca)
     + [Generar certificat propi de la CA](#generar-certificat-propi-de-la-ca)
     + [Generar un request per a la CA](#generar-un-request-per-a-la-ca)
     + [Firma certificat com a CA](#firma-certificat-com-a-ca)

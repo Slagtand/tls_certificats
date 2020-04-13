@@ -1,3 +1,26 @@
+- [Servidor ldap segur](#servidor-ldap-segur)
+  * [Generar certificats](#generar-certificats)
+    + [Generar claus privades del servidor](#generar-claus-privades-del-servidor)
+    + [Creació CA](#creaci--ca)
+    + [Generar certificat propi de la CA](#generar-certificat-propi-de-la-ca)
+    + [Generar un request per a la CA](#generar-un-request-per-a-la-ca)
+    + [Firma certificat com a CA](#firma-certificat-com-a-ca)
+  * [Configuracions per TLS](#configuracions-per-tls)
+    + [Configuració del server](#configuraci--del-server)
+    + [Configuració del client](#configuraci--del-client)
+  * [Comprovacions](#comprovacions)
+- [OpenVPN amb certificats propis](#openvpn-amb-certificats-propis)
+  * [Generaració de claus al servidor](#generaraci--de-claus-al-servidor)
+    + [Creació CA](#creaci--ca-1)
+    + [Generació clau del servidor i request per la CA](#generaci--clau-del-servidor-i-request-per-la-ca)
+    + [Creació i certificació de CA externa](#creaci--i-certificaci--de-ca-externa)
+  * [Generació de claus al client](#generaci--de-claus-al-client)
+    + [Generació de clau client i request per la CA](#generaci--de-clau-client-i-request-per-la-ca)
+    + [Certificació de CA externa](#certificaci--de-ca-externa)
+  * [Configuració vpn i arrencada servidor](#configuraci--vpn-i-arrencada-servidor)
+  * [Configuració vpn i arrencada client](#configuraci--vpn-i-arrencada-client)
+  * [Resultat final](#resultat-final)
+
 # Servidor ldap segur
 
 ## Generar certificats
@@ -7,6 +30,16 @@
 ```bash
 $ openssl genrsa -out cakey.pem 2048
 $ openssl genrsa -out serverkey.pem 2048
+```
+
+### Creació CA
+
+Crearem una CA per auto certificar-nos
+
+```bash
+[marc@localhost ldapserver19:tls]$ cat ca.conf 
+basicConstraints = critical,CA:FALSE
+extendedKeyUsage = serverAuth,emailProtection
 ```
 
 ### Generar certificat propi de la CA
@@ -29,7 +62,7 @@ Common Name (eg, your name or your server&#39;s hostname) []:VeritatAbsoluta
 Email Address []:admin@edt.org
 ```
 
-### Generar un certificat request per enviar a la certificadora CA
+### Generar un request per a la CA
 
 ```bash
 [marc@localhost ldapserver19:tls]$ openssl req -new -key serverkey.pem -out servercert.pem
@@ -52,16 +85,6 @@ Please enter the following &#39;extra&#39; attributes
 to be sent with your certificate request
 A challenge password []:jupiter
 An optional company name []:edt
-```
-
-### Creació CA
-
-Nosaltres mateixos farem de CA
-
-```bash
-[marc@localhost ldapserver19:tls]$ cat ca.conf 
-basicConstraints = critical,CA:FALSE
-extendedKeyUsage = serverAuth,emailProtection
 ```
 
 ### Firma certificat com a CA
@@ -130,6 +153,11 @@ Per la part del client, hem de seguir les següents indicacions.
 
 Comprovem amb les ordres `ldapsearch` i `openssl` si ho hem fet tot correctament:
 
+* Arrencar el servidor ldap
+  
+  ```bash
+  docker run --rm --name ldap.edt.org -h ldap.edt.org -p 389:389  -p 636:636 -d marcgc/ldapserver19:tls 
+  ```
 - Amb `ldapsearch` hi afegirem l'opció `-ZZ` que, bàsicament, executa TLS i **requereix** que l'operació sigui satisfactoria per executar l'ordre.
 
 ```bash
